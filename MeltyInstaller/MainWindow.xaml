@@ -1,0 +1,14 @@
+﻿<Window x:Class="MeltyInstaller.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:MeltyInstaller" mc:Ignorable="d" Title="MainWindow" Height="450" Width="800">
+    <StackPanel>
+        <TextBlock Text="{Binding CounterValue}" />
+        <Button Command="{Binding Decrement}" Content="-" />
+        <Button Command="{Binding Increment}" Content="+" />
+        <TextBlock Text="{Binding StepSize}" />
+        <Slider Value="{Binding StepSize}" TickFrequency="1" Minimum="1" Maximum="10" />
+    </StackPanel>
+</Window>
