@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Elmish.WPF" Version="4.0.0-beta-41" />
+    <PackageReference Include="FSharp.Data" Version="4.2.0" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>

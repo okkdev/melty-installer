@@ -3,12 +3,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:MeltyInstaller" mc:Ignorable="d" Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <TextBlock Text="{Binding CounterValue}" />
-        <Button Command="{Binding Decrement}" Content="-" />
-        <Button Command="{Binding Increment}" Content="+" />
-        <TextBlock Text="{Binding StepSize}" />
-        <Slider Value="{Binding StepSize}" TickFrequency="1" Minimum="1" Maximum="10" />
+    xmlns:local="clr-namespace:MeltyInstaller" mc:Ignorable="d" Title="Melty Blood Actress Again Current Core Community Edition - Installer" Height="450" Width="700" ResizeMode="NoResize">
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,25,0,0">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel>
+                <TextBlock Text="{Binding Path, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding StatusMsg}" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel>
+                <Button Command="{Binding OpenPath}" Content="Select Path" Height="20" Margin="0,5,10,5" Width="80" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel>
+            <ProgressBar Height="10" Width="100" Value="50"/>
+        </StackPanel>
+        <StackPanel>
+            <Button Command="{Binding Install}" Content="Install" Height="20" Margin="0,5,10,5" Width="80" />
+        </StackPanel>
     </StackPanel>
 </Window>
