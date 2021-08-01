@@ -1,14 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
+    <Authors>okkdev</Authors>
+    <RepositoryUrl>https://github.com/okkdev/melty-installer</RepositoryUrl>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MeltyInstaller.Core\MeltyInstaller.Core.fsproj" />
+    <None Remove="necobox.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="necobox.png" />
   </ItemGroup>
 
 </Project>

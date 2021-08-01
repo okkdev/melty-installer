@@ -5,7 +5,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using MeltyInstaller.Core;
 
 namespace MeltyInstaller
 {
@@ -14,15 +13,6 @@ namespace MeltyInstaller
     /// </summary>
     public partial class App : Application
     {
-        public App()
-        {
-            this.Activated += StartElmish;
-        }
 
-        private void StartElmish(object sender, EventArgs e)
-        {
-            this.Activated -= StartElmish;
-            Program.main(MainWindow);
-        }
     }
 }

@@ -3,12 +3,57 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:MeltyInstaller" mc:Ignorable="d" Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <TextBlock Text="{Binding CounterValue}" />
-        <Button Command="{Binding Decrement}" Content="-" />
-        <Button Command="{Binding Increment}" Content="+" />
-        <TextBlock Text="{Binding StepSize}" />
-        <Slider Value="{Binding StepSize}" TickFrequency="1" Minimum="1" Maximum="10" />
-    </StackPanel>
+    xmlns:local="clr-namespace:MeltyInstaller" mc:Ignorable="d" Title="MBAACC Community Edition Installer" Height="450" Width="650" ResizeMode="NoResize">
+    
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <Image x:Name="image" HorizontalAlignment="Left" VerticalAlignment="Bottom" Source="/necobox.png"/>
+
+        <Grid Grid.Column="1" Margin="40,40,40,40">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Label Content="Install Path:" Grid.Row="0" VerticalAlignment="Bottom"/>
+
+            <Grid Height="20" Grid.Row="1" VerticalAlignment="Top" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="installPath" TextChanged="installPath_TextChanged" />
+                <Button x:Name="selectPath" Content="Select" Grid.Column="1" Click="selectPath_Click"/>
+            </Grid>
+
+            <CheckBox x:Name="installCCCaster" Content="Install CCCaster (Rollback netcode netplay)" Grid.Row="3" VerticalAlignment="Center" />
+            <CheckBox x:Name="installConcerto" Content="Install Concerto (GUI and lobby system for CCCaster)" Grid.Row="4" VerticalAlignment="Center" Click="installConcerto_Click" />
+
+            <Border BorderThickness="0.5" BorderBrush="Black" Padding="2,2,2,2" Grid.Row="6" Grid.RowSpan="4">
+                <ScrollViewer x:Name="scrollLog" VerticalScrollBarVisibility="Auto">
+                    <TextBlock x:Name="installLog" />
+                </ScrollViewer>
+            </Border>
+
+            <ProgressBar x:Name="progressBar" Grid.Row="10" Height="20" />
+            <Button x:Name="install" Content="Install" Grid.Row="11" Height="25" Width="80" HorizontalAlignment="Right" Click="install_Click" />
+
+        </Grid>
+    </Grid>
 </Window>
