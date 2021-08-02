@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Ookii.Dialogs.Wpf;
+using System.Net.Http;
 
 namespace MeltyInstaller
 {
@@ -17,11 +18,12 @@ namespace MeltyInstaller
     /// </summary>
     public partial class MainWindow : Window
     {
-        WebClient webClient;
-        const string mbaaccUrl = "https://1g4i.short.gy/mbaacc";
-        const string cccasterUrl = "https://1g4i.short.gy/cccaster";
-        const string concertoUrl = "https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe";
         string path;
+        HttpClient client;
+
+        Tuple<string, string> mbaaccInstall = new Tuple<string, string>("https://1g4i.short.gy/mbaacc", "mbaacc.zip");
+        Tuple<string, string> cccasterInstall = new Tuple<string, string>("https://1g4i.short.gy/cccaster", "cccaster.zip");
+        Tuple<string, string> concertoInstall = new Tuple<string, string>("https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe");
 
         public MainWindow()
         {
@@ -31,11 +33,16 @@ namespace MeltyInstaller
 
         private void selectPath_Click(object sender, RoutedEventArgs e)
         {
-            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
-            dialog.Description = "Please select a folder.";
-            dialog.UseDescriptionForTitle = true;
-            if ((bool)dialog.ShowDialog(this))
+            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog
+            {
+                UseDescriptionForTitle = true,
+                Description = "Please select a folder." 
+            };
+
+            if ((bool) dialog.ShowDialog(this))
+            {
                 SetPath(dialog.SelectedPath);
+            }
         }
 
         private void installPath_TextChanged(object sender, TextChangedEventArgs e)
@@ -49,7 +56,8 @@ namespace MeltyInstaller
             {
                 installCCCaster.IsChecked = true;
                 installCCCaster.IsEnabled = false;
-            } else
+            } 
+            else
             {
                 installCCCaster.IsEnabled = true;
             }
@@ -74,83 +82,97 @@ namespace MeltyInstaller
 
         private async void Install()
         {
-
             install.IsEnabled = false;
             installCCCaster.IsEnabled = false;
             installConcerto.IsEnabled = false;
 
-
             PrintLog("Creating Directory...");
             Directory.CreateDirectory(path);
 
+            client = new HttpClient();
+            
+            Tuple<string, string>[] installInformation = new Tuple<string, string>[] { mbaaccInstall };
 
-            var filepath = Path.Join(path, "mbaacc.zip");
-
-            await DownloadFile(mbaaccUrl, filepath);
-
-            PrintLog("Extracting MBAACC...");
-            ZipFile.ExtractToDirectory(filepath, path);
-
-            PrintLog("Cleaning up MBAACC Archive...");
-            try
+            if(installCCCaster.IsChecked.Value)
             {
-                File.Delete(filepath);
-            }
-            catch {
-                PrintLog("Cleaning up MBAACC Archive failed...");
-            }
+                installInformation[1] = cccasterInstall;
+            };
 
-
-            if (installCCCaster.IsChecked.Value)
+            if(installConcerto.IsChecked.Value)
             {
-                filepath = Path.Join(path, "cccaster.zip");
+                installInformation[2] = concertoInstall;
+            };
 
-                await DownloadFile(cccasterUrl, filepath);
+            PrintLog("Downloading files...");
 
-                PrintLog("Extracting CCCaster...");
-                ZipFile.ExtractToDirectory(filepath, path);
+            await Task.WhenAll(installInformation.Select(info => DownloadFile(info.Item1, info.Item2)));
 
-                PrintLog("Cleaning up CCCaster Archive...");
-                try
-                {
-                    File.Delete(filepath);
-                }
-                catch
-                {
-                    PrintLog("Cleaning up CCCaster Archive failed...");
-                }
-            }
+            PrintLog("Finished downloading files!");
 
+            client.Dispose();
 
-            if (installConcerto.IsChecked.Value)
-            {
-                filepath = Path.Join(path, "Concerto.exe");
+            PrintLog("Unzipping archives...");
 
-                await DownloadFile(concertoUrl, filepath);
-            }
+            await Task.WhenAll(installInformation.Select(info => UnzipFile(info.Item2)));
+
+            PrintLog("Finished unzipping archives!");
 
             PrintLog("DONE!");
         }
 
-        private async Task DownloadFile(string urlAddress, string filepath)
+        // Modified code from https://www.tugberkugurlu.com/archive/efficiently-streaming-large-http-responses-with-httpclient
+        // TODO: add progress reporting
+        private async Task DownloadFile(string urlAddress, string fileName)
         {
-            using (webClient = new WebClient())
+            Uri uri = new Uri(urlAddress);
+            string completePath = Path.Join(path, fileName);
+
+            bool fileExists = File.Exists(completePath);
+
+            if(!fileExists)
             {
-                webClient.DownloadFileCompleted += (s, e) => PrintLog("Download file completed.");
-                webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
-
-                Uri URL = new Uri(urlAddress);
-
-                try
+                using (HttpResponseMessage response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    PrintLog("Starting Download of: " + Path.GetFileName(filepath));
-                    await webClient.DownloadFileTaskAsync(URL, filepath);
-                }
-                catch (Exception ex)
-                {
-                    PrintLog("Download failed: " + ex.Message);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        PrintLog($"Starting Download of: {fileName}");
+
+                        using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+                        {
+                            using (Stream streamToWriteTo = File.Open(completePath, FileMode.Create))
+                            {
+                                await streamToReadFrom.CopyToAsync(streamToWriteTo);
+                            }
+                        }
+
+                        PrintLog($"Finished Download of: {fileName}");
+                    }
+                    else
+                    {
+                        PrintLog($"Download failed for: {fileName}");
+                    }
                 }
             }
+        }
+
+        private Task UnzipFile(string fileName)
+        {
+            string completePath = Path.Join(path, fileName);
+
+            if (fileName.Contains(".exe"))
+            {
+                return Task.CompletedTask;
+            }
+
+            PrintLog($"Starting Unzip of: {fileName}");
+
+            ZipFile.ExtractToDirectory(completePath, path);
+
+            PrintLog($"Cleaning up {fileName} archive...");
+
+            File.Delete(completePath);
+
+            return Task.CompletedTask;
         }
 
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
