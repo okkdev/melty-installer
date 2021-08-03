@@ -1,27 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Authors>okkdev</Authors>
     <RepositoryUrl>https://github.com/okkdev/melty-installer</RepositoryUrl>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>necobox.ico</ApplicationIcon>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="necobox.png" />
     <None Remove="necobox.ico" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="necobox.png" />
     <Resource Include="necobox.ico" />
   </ItemGroup>
-
 </Project>
