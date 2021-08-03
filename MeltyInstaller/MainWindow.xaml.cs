@@ -19,6 +19,8 @@ namespace MeltyInstaller
         string path;
         HttpClient client;
 
+        const int bufferSize = 8192;
+
         Tuple<string, string> mbaaccInstall = new Tuple<string, string>("https://1g4i.short.gy/mbaacc", "mbaacc.zip");
         Tuple<string, string> cccasterInstall = new Tuple<string, string>("https://1g4i.short.gy/cccaster", "cccaster.zip");
         Tuple<string, string> concertoInstall = new Tuple<string, string>("https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe");
@@ -125,7 +127,9 @@ namespace MeltyInstaller
         }
 
         // Modified code from https://www.tugberkugurlu.com/archive/efficiently-streaming-large-http-responses-with-httpclient
-        // TODO: add progress reporting
+        // @abosma - TODO: Add progress bar updating with download reporting
+        //                 Possible way maybe by using totalReads with a smaller modulo to add to progress bar, not yet sure.
+        //                 Further changes needed is extra error checking if connection to server can't be made.
         private async Task DownloadFile(string urlAddress, string fileName)
         {
             Uri uri = new Uri(urlAddress);
@@ -141,12 +145,37 @@ namespace MeltyInstaller
                     {
                         PrintLog($"Downloading: {fileName}");
 
-                        using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+                        using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync(),
+                            fileStream = new FileStream(completePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, true))
                         {
-                            using (Stream streamToWriteTo = File.Open(completePath, FileMode.Create))
+                            // Progress report implementation modified from: https://github.com/dotnet/runtime/issues/16681#issuecomment-195980023
+                            var totalRead = 0L;
+                            var totalReads = 0L;
+                            var totalSize = response.Content.Headers.ContentLength;
+                            var buffer = new byte[bufferSize];
+                            var isMoreToRead = true;
+
+                            do
                             {
-                                await streamToReadFrom.CopyToAsync(streamToWriteTo);
+                                var read = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length);
+                                if (read == 0)
+                                {
+                                    isMoreToRead = false;
+                                }
+                                else
+                                {
+                                    await fileStream.WriteAsync(buffer, 0, read);
+
+                                    totalRead += read;
+                                    totalReads += 1;
+
+                                    if (totalReads % 512 == 0)
+                                    {
+                                        PrintLog($"{fileName} download progress: {totalRead / 1048576}mb of {totalSize / 1048576}mb");
+                                    }
+                                }
                             }
+                            while (isMoreToRead);
                         }
 
                         progressBar.Value += 20;
