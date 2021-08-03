@@ -25,10 +25,6 @@ namespace MeltyInstaller
         Tuple<string, string> cccasterInstall = new Tuple<string, string>("https://1g4i.short.gy/cccaster", "cccaster.zip");
         Tuple<string, string> concertoInstall = new Tuple<string, string>("https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe");
 
-        delegate void ProgressChangedHandler(long? totalFileSize, long totalBytesDownloaded, double? progressPercentage);
-
-        event ProgressChangedHandler ProgressChanged;
-
         public MainWindow()
         {
             InitializeComponent();
