@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
-using System.Collections.Generic;
+using System.Net.Http;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Ookii.Dialogs.Wpf;
-using System.Net.Http;
+using System.Collections.Generic;
 
 namespace MeltyInstaller
 {
@@ -89,21 +87,23 @@ namespace MeltyInstaller
             PrintLog("Creating Directory...");
             Directory.CreateDirectory(path);
 
+            progressBar.Value += 5;
+
             client = new HttpClient();
-            
-            Tuple<string, string>[] installInformation = new Tuple<string, string>[] { mbaaccInstall };
+
+            List<Tuple<string, string>> installInformation = new List<Tuple<string, string>> { mbaaccInstall };
 
             if(installCCCaster.IsChecked.Value)
             {
-                installInformation[1] = cccasterInstall;
+                installInformation.Add(cccasterInstall);
             };
 
             if(installConcerto.IsChecked.Value)
             {
-                installInformation[2] = concertoInstall;
+                installInformation.Add(concertoInstall);
             };
 
-            PrintLog("Downloading files...");
+            PrintLog("Downloading files... (This might take a while)");
 
             await Task.WhenAll(installInformation.Select(info => DownloadFile(info.Item1, info.Item2)));
 
@@ -116,6 +116,8 @@ namespace MeltyInstaller
             await Task.WhenAll(installInformation.Select(info => UnzipFile(info.Item2)));
 
             PrintLog("Finished unzipping archives!");
+
+            progressBar.Value = 100;
 
             PrintLog("DONE!");
         }
@@ -135,7 +137,7 @@ namespace MeltyInstaller
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        PrintLog($"Starting Download of: {fileName}");
+                        PrintLog($"Downloading: {fileName}");
 
                         using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
                         {
@@ -145,6 +147,7 @@ namespace MeltyInstaller
                             }
                         }
 
+                        progressBar.Value += 20;
                         PrintLog($"Finished Download of: {fileName}");
                     }
                     else
@@ -168,20 +171,15 @@ namespace MeltyInstaller
 
             ZipFile.ExtractToDirectory(completePath, path);
 
+            progressBar.Value += 10;
+
             PrintLog($"Cleaning up {fileName} archive...");
 
             File.Delete(completePath);
 
+            progressBar.Value += 5;
+
             return Task.CompletedTask;
-        }
-
-        private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            progressBar.Value = e.ProgressPercentage;
-
-            PrintLog(string.Format("{0} MB's / {1} MB's",
-                (e.BytesReceived / 1024d / 1024d).ToString("0.00"),
-                (e.TotalBytesToReceive / 1024d / 1024d).ToString("0.00")));
         }
     }
 }
