@@ -7,6 +7,7 @@
     <RepositoryUrl>https://github.com/okkdev/melty-installer</RepositoryUrl>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>necobox.ico</ApplicationIcon>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="necobox.png" />
