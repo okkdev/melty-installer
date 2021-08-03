@@ -53,8 +53,13 @@
             </Border>
 
             <ProgressBar x:Name="progressBar" Grid.Row="11" Height="20" />
-            <Button x:Name="install" Content="Install" Grid.Row="12" Height="25" Width="80" HorizontalAlignment="Right" Click="install_Click" />
 
+
+            <StackPanel Grid.Row="12" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                <Button x:Name="install" Content="Install" Height="25" Width="80" Click="install_Click" Margin="0,0,10,0" />
+                <Button x:Name="close" Content="Close" Height="25" Width="80" Click="close_Click" />
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

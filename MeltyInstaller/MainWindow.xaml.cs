@@ -119,7 +119,9 @@ namespace MeltyInstaller
 
             progressBar.Value = 100;
 
+            PrintLog("---------------------");
             PrintLog("DONE!");
+            close.Content = "Done";
         }
 
         // Modified code from https://www.tugberkugurlu.com/archive/efficiently-streaming-large-http-responses-with-httpclient
@@ -162,14 +164,14 @@ namespace MeltyInstaller
         {
             string completePath = Path.Join(path, fileName);
 
-            if (fileName.Contains(".exe"))
+            if (!fileName.Contains(".zip"))
             {
                 return Task.CompletedTask;
             }
 
             PrintLog($"Starting Unzip of: {fileName}");
 
-            ZipFile.ExtractToDirectory(completePath, path);
+            ZipFile.ExtractToDirectory(completePath, path, true);
 
             progressBar.Value += 10;
 
@@ -180,6 +182,11 @@ namespace MeltyInstaller
             progressBar.Value += 5;
 
             return Task.CompletedTask;
+        }
+
+        private void close_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.MainWindow.Close();
         }
     }
 }
