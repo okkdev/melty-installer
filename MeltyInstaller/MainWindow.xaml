@@ -48,7 +48,7 @@
 
             <Border BorderThickness="0.5" BorderBrush="Black" Padding="2,2,2,2" Grid.Row="7" Grid.RowSpan="4">
                 <ScrollViewer x:Name="scrollLog" VerticalScrollBarVisibility="Auto">
-                    <TextBlock x:Name="installLog" />
+                    <TextBox x:Name="installLog" Background="Transparent" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap" />
                 </ScrollViewer>
             </Border>
 

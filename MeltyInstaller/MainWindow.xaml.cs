@@ -82,14 +82,18 @@ namespace MeltyInstaller
 
         private async void Install()
         {
+            installPath.IsEnabled = false;
+            selectPath.IsEnabled = false;
             install.IsEnabled = false;
             installCCCaster.IsEnabled = false;
             installConcerto.IsEnabled = false;
 
-            PrintLog("Creating Directory...");
-            Directory.CreateDirectory(path);
-
-            progressBar.Value += 5;
+            if (!Directory.Exists(path))
+            {
+                PrintLog("Creating Directory...");
+                Directory.CreateDirectory(path);
+                progressBar.Value += 5;
+            }
 
             client = new HttpClient();
 
@@ -172,13 +176,13 @@ namespace MeltyInstaller
                                     if (totalReads % 512 == 0)
                                     {
                                         PrintLog($"{fileName} download progress: {totalRead / 1048576}mb of {totalSize / 1048576}mb");
+                                        progressBar.Value += 0.3;
                                     }
                                 }
                             }
                             while (isMoreToRead);
                         }
 
-                        progressBar.Value += 20;
                         PrintLog($"Finished Download of: {fileName}");
                     }
                     else
@@ -215,6 +219,10 @@ namespace MeltyInstaller
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
+            if (close.Content.ToString() == "Done")
+            {
+                System.Diagnostics.Process.Start("explorer.exe", path);
+            }
             Application.Current.MainWindow.Close();
         }
     }
