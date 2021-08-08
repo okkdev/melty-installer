@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
+using IWshRuntimeLibrary;
+using File = System.IO.File;
 
 namespace MeltyInstaller
 {
@@ -21,9 +23,20 @@ namespace MeltyInstaller
 
         const int bufferSize = 8192;
 
-        Tuple<string, string> mbaaccInstall = new Tuple<string, string>("https://1g4i.short.gy/mbaacc", "mbaacc.zip");
-        Tuple<string, string> cccasterInstall = new Tuple<string, string>("https://1g4i.short.gy/cccaster", "cccaster.zip");
-        Tuple<string, string> concertoInstall = new Tuple<string, string>("https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe");
+        string[] mbaaccInstall = new string[]
+        {
+            "https://1g4i.short.gy/mbaacc", "mbaacc.zip", "MBAA.exe" 
+        };
+
+        string[] cccasterInstall = new string[]
+        {
+            "https://1g4i.short.gy/cccaster", "cccaster.zip", "cccaster.v3.0.exe"
+        };
+
+        string[] concertoInstall = new string[]
+        {
+            "https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe", "Concerto.exe"
+        };
 
         public MainWindow()
         {
@@ -48,19 +61,6 @@ namespace MeltyInstaller
         private void installPath_TextChanged(object sender, TextChangedEventArgs e)
         {
             SetPath(installPath.Text);
-        }
-
-        private void installConcerto_Click(object sender, RoutedEventArgs e)
-        {
-            if (installConcerto.IsChecked.Value) 
-            {
-                installCCCaster.IsChecked = true;
-                installCCCaster.IsEnabled = false;
-            } 
-            else
-            {
-                installCCCaster.IsEnabled = true;
-            }
         }
 
         private void install_Click(object sender, RoutedEventArgs e)
@@ -97,7 +97,7 @@ namespace MeltyInstaller
 
             client = new HttpClient();
 
-            List<Tuple<string, string>> installInformation = new List<Tuple<string, string>> { mbaaccInstall };
+            List<string[]> installInformation = new List<string[]> { mbaaccInstall };
 
             if(installCCCaster.IsChecked.Value)
             {
@@ -111,7 +111,7 @@ namespace MeltyInstaller
 
             PrintLog("Downloading files... (This might take a while)");
 
-            await Task.WhenAll(installInformation.Select(info => DownloadFile(info.Item1, info.Item2)));
+            await Task.WhenAll(installInformation.Select(info => DownloadFile(info[0], info[1])));
 
             PrintLog("Finished downloading files!");
 
@@ -119,9 +119,18 @@ namespace MeltyInstaller
 
             PrintLog("Unzipping archives...");
 
-            await Task.WhenAll(installInformation.Select(info => UnzipFile(info.Item2)));
+            await Task.WhenAll(installInformation.Select(info => UnzipFile(info[1])));
 
             PrintLog("Finished unzipping archives!");
+
+            if(CreateShortcuts.IsChecked.Value)
+            {
+                PrintLog("Creating shortcuts...");
+
+                await Task.WhenAll(installInformation.Select(info => CreateShortcut(info[2])));
+
+                PrintLog("Finished creating shortcuts!");
+            }
 
             progressBar.Value = 100;
 
@@ -213,6 +222,23 @@ namespace MeltyInstaller
             File.Delete(completePath);
 
             progressBar.Value += 5;
+
+            return Task.CompletedTask;
+        }
+
+        private Task CreateShortcut(string fileName)
+        {
+            string deskDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            string completePath = Path.Join(path, fileName);
+
+            WshShell wsh = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)wsh.CreateShortcut($"{deskDir}\\{fileName}.lnk");
+
+            shortcut.TargetPath = completePath;
+            shortcut.WindowStyle = 1;
+            shortcut.WorkingDirectory = path;
+
+            shortcut.Save();
 
             return Task.CompletedTask;
         }
