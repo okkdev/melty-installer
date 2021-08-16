@@ -44,6 +44,19 @@ namespace MeltyInstaller
             SetPath("C:\\Games\\MBAACC");
         }
 
+        private void installConcerto_Click(object sender, RoutedEventArgs e)
+        {
+            if (installConcerto.IsChecked.Value)
+            {
+                installCCCaster.IsChecked = true;
+                installCCCaster.IsEnabled = false;
+            }
+            else
+            {
+                installCCCaster.IsEnabled = true;
+            }
+        }
+
         private void selectPath_Click(object sender, RoutedEventArgs e)
         {
             VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog
