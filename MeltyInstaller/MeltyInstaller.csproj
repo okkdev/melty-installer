@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Authors>okkdev</Authors>
+    <Authors>okkdev &amp; AtillaBosma</Authors>
     <RepositoryUrl>https://github.com/okkdev/melty-installer</RepositoryUrl>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>necobox.ico</ApplicationIcon>
@@ -12,6 +12,17 @@
   <ItemGroup>
     <None Remove="necobox.png" />
     <None Remove="necobox.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
