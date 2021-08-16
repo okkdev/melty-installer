@@ -43,9 +43,9 @@
                 <Button x:Name="selectPath" Content="Select" Grid.Column="1" Click="selectPath_Click"/>
             </Grid>
 
-            <CheckBox x:Name="installCCCaster" Content="Install CCCaster (Rollback netcode netplay)" Grid.Row="3" VerticalAlignment="Center" />
-            <CheckBox x:Name="installConcerto" Content="Install Concerto (GUI and lobby system for CCCaster)" Grid.Row="4" VerticalAlignment="Center"/>
-            <CheckBox x:Name="CreateShortcuts" Content="Create shortcuts on Desktop" Grid.Row="5" VerticalAlignment="Center"/>
+            <CheckBox x:Name="installCCCaster" Content="Install CCCaster (Launcher with rollback netcode netplay)" Grid.Row="3" VerticalAlignment="Center" />
+            <CheckBox x:Name="installConcerto" Content="Install Concerto (GUI, lobby system and more for CCCaster)" Grid.Row="4" VerticalAlignment="Center" Click="installConcerto_Click"/>
+            <CheckBox x:Name="createShortcuts" Content="Create desktop shortcuts" Grid.Row="5" VerticalAlignment="Center"/>
             
             <Border BorderThickness="0.5" BorderBrush="Black" Padding="2,2,2,2" Grid.Row="7" Grid.RowSpan="4">
                 <ScrollViewer x:Name="scrollLog" VerticalScrollBarVisibility="Auto">

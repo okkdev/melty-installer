@@ -95,11 +95,13 @@ namespace MeltyInstaller
 
         private async void Install()
         {
+            // lock the inputs
             installPath.IsEnabled = false;
             selectPath.IsEnabled = false;
             install.IsEnabled = false;
             installCCCaster.IsEnabled = false;
             installConcerto.IsEnabled = false;
+            createShortcuts.IsEnabled = false;
 
             if (!Directory.Exists(path))
             {
@@ -136,7 +138,7 @@ namespace MeltyInstaller
 
             PrintLog("Finished unzipping archives!");
 
-            if(CreateShortcuts.IsChecked.Value)
+            if(createShortcuts.IsChecked.Value)
             {
                 PrintLog("Creating shortcuts...");
 
