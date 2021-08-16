@@ -8,4 +8,4 @@ Downloads MBAACC, CCCaster and Concerto.
 - [x] Fix async blocking stuff (Thanks @abosma)
 - [ ] Get unzip Progress
 - [ ] Make the progress bar actually represent the state of each download and the whole installation
-- [ ] Create desktop shortcuts
+- [x] Create desktop shortcuts (Thanks @abosma)
