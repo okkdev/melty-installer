@@ -38,7 +38,8 @@ namespace MeltyInstaller
             "https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe", "Concerto.exe"
         };
         
-        Dictionary<string, int> downloadStatus = new Dictionary<string, int>();
+        Dictionary<string, double> downloadStatus = new Dictionary<string, double>();
+        double downloadSize = 0;
 
         public MainWindow()
         {
@@ -185,6 +186,7 @@ namespace MeltyInstaller
                             var totalRead = 0L;
                             var totalReads = 0L;
                             var totalSize = response.Content.Headers.ContentLength;
+                            downloadSize += Convert.ToDouble(totalSize);
                             var buffer = new byte[bufferSize];
                             var isMoreToRead = true;
 
@@ -202,12 +204,12 @@ namespace MeltyInstaller
                                     totalRead += read;
                                     totalReads += 1;
                                     
-                                    downloadStatus[fileName] = Math.round((totalRead / totalSize) * 100);
-                                    progressBar.Value = downloadStatus.values.sum() / downloadStatus.Count;
+                                    downloadStatus[fileName] = Convert.ToDouble(totalRead);
+                                    progressBar.Value = downloadStatus.Values.Sum() / downloadSize * 100;
 
                                     if (totalReads % 512 == 0)
                                     {
-                                        PrintLog($"{fileName} download progress: {totalRead / 1048576}mb of {totalSize / 1048576}mb");
+                                        PrintLog($"{fileName} download progress: {totalRead / 1048576}MB of {totalSize / 1048576}MB");
                                     }
                                 }
                             }
