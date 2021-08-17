@@ -37,6 +37,8 @@ namespace MeltyInstaller
         {
             "https://github.com/shiburizu/concerto-mbaacc/releases/latest/download/Concerto.exe", "Concerto.exe", "Concerto.exe"
         };
+        
+        Dictionary<string, int> downloadStatus = new Dictionary<string, int>();
 
         public MainWindow()
         {
@@ -107,7 +109,6 @@ namespace MeltyInstaller
             {
                 PrintLog("Creating Directory...");
                 Directory.CreateDirectory(path);
-                progressBar.Value += 5;
             }
 
             client = new HttpClient();
@@ -172,6 +173,8 @@ namespace MeltyInstaller
                     if (response.IsSuccessStatusCode)
                     {
                         PrintLog($"Downloading: {fileName}");
+                        
+                        downloadStatus.Add(fileName, 0);
 
                         using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync(),
                             fileStream = new FileStream(completePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, true))
@@ -200,7 +203,10 @@ namespace MeltyInstaller
                                     if (totalReads % 512 == 0)
                                     {
                                         PrintLog($"{fileName} download progress: {totalRead / 1048576}mb of {totalSize / 1048576}mb");
-                                        progressBar.Value += 0.3;
+                                        
+                                        downloadStatus[fileName] = Math.round((totalRead / totalSize) * 100);
+                                        
+                                        progressBar.Value = downloadStatus.values.sum() / downloadStatus.Count;
                                     }
                                 }
                             }
@@ -230,13 +236,9 @@ namespace MeltyInstaller
 
             ZipFile.ExtractToDirectory(completePath, path, true);
 
-            progressBar.Value += 10;
-
             PrintLog($"Cleaning up {fileName} archive...");
 
             File.Delete(completePath);
-
-            progressBar.Value += 5;
 
             return Task.CompletedTask;
         }
