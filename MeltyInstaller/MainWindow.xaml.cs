@@ -104,6 +104,8 @@ namespace MeltyInstaller
             installCCCaster.IsEnabled = false;
             installConcerto.IsEnabled = false;
             createShortcuts.IsEnabled = false;
+            
+            close.Content = "Cancel";
 
             if (!Directory.Exists(path))
             {
