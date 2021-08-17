@@ -201,14 +201,13 @@ namespace MeltyInstaller
 
                                     totalRead += read;
                                     totalReads += 1;
+                                    
+                                    downloadStatus[fileName] = Math.round((totalRead / totalSize) * 100);
+                                    progressBar.Value = downloadStatus.values.sum() / downloadStatus.Count;
 
                                     if (totalReads % 512 == 0)
                                     {
                                         PrintLog($"{fileName} download progress: {totalRead / 1048576}mb of {totalSize / 1048576}mb");
-                                        
-                                        downloadStatus[fileName] = Math.round((totalRead / totalSize) * 100);
-                                        
-                                        progressBar.Value = downloadStatus.values.sum() / downloadStatus.Count;
                                     }
                                 }
                             }
