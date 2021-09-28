@@ -10,6 +10,7 @@ using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
 using IWshRuntimeLibrary;
 using File = System.IO.File;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace MeltyInstaller
 {
@@ -105,7 +106,10 @@ namespace MeltyInstaller
             installCCCaster.IsEnabled = false;
             installConcerto.IsEnabled = false;
             createShortcuts.IsEnabled = false;
-            
+
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, this);
+            TaskbarManager.Instance.SetProgressValue(0, 100, this);
+
             close.Content = "Cancel";
 
             if (!Directory.Exists(path))
@@ -138,6 +142,8 @@ namespace MeltyInstaller
 
             PrintLog("Unzipping archives...");
 
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate, this);
+
             await Task.WhenAll(installInformation.Select(info => UnzipFile(info[1])));
 
             PrintLog("Finished unzipping archives!");
@@ -152,6 +158,9 @@ namespace MeltyInstaller
             }
 
             progressBar.Value = 100;
+
+            TaskbarManager.Instance.SetProgressValue(100, 100, this);
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress, this);
 
             PrintLog("---------------------");
             PrintLog("DONE!");
@@ -205,6 +214,7 @@ namespace MeltyInstaller
                                     totalReads += 1;
                                     
                                     downloadStatus[fileName] = Convert.ToDouble(totalRead);
+                                    TaskbarManager.Instance.SetProgressValue((int)(downloadStatus.Values.Sum() / downloadSize * 100), 100, this);
                                     progressBar.Value = downloadStatus.Values.Sum() / downloadSize * 100;
 
                                     if (totalReads % 512 == 0)
