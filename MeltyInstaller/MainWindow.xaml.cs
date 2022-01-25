@@ -136,7 +136,7 @@ namespace MeltyInstaller
 
             client.Dispose();
 
-            PrintLog("Unzipping archives...");
+            PrintLog("Unzipping archives... (This might take a while and the installer might not be responsive during this time, please be patient!)");
 
             await Task.WhenAll(installInformation.Select(info => UnzipFile(info[1])));
 
