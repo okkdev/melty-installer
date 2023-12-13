@@ -11,12 +11,11 @@ pub fn main() -> iced::Result {
 #[derive(Debug)]
 struct Example {
     downloads: Vec<Download>,
-    last_id: usize,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
-    Add,
+    StartDownload,
     Download(usize),
     DownloadProgressed((usize, download::Progress)),
 }
@@ -28,25 +27,17 @@ impl Application for Example {
     type Flags = ();
 
     fn new(_flags: ()) -> (Example, Command<Message>) {
-        (
-            Example {
-                downloads: vec![Download::new(0)],
-                last_id: 0,
-            },
-            Command::none(),
-        )
+        (Example { downloads: vec![] }, Command::none())
     }
 
     fn title(&self) -> String {
-        String::from("Download progress - Iced")
+        String::from("Melty Installer")
     }
 
     fn update(&mut self, message: Message) -> Command<Message> {
         match message {
-            Message::Add => {
-                self.last_id += 1;
-
-                self.downloads.push(Download::new(self.last_id));
+            Message::StartDownload => {
+                self.downloads.push(Download::new(0));
             }
             Message::Download(index) => {
                 if let Some(download) = self.downloads.get_mut(index) {
@@ -71,8 +62,8 @@ impl Application for Example {
     fn view(&self) -> Element<Message> {
         let downloads = Column::with_children(self.downloads.iter().map(Download::view).collect())
             .push(
-                button("Add another download")
-                    .on_press(Message::Add)
+                button("Download")
+                    .on_press(Message::StartDownload)
                     .padding(10),
             )
             .spacing(20)
